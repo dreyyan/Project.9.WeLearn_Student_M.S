@@ -1,12 +1,12 @@
- # # # # # # # # # # # # # # # # # # # # # # #
-#        Project: Student Management System   #
-#         Author: dreyyan                     #
-#       Language: Python                      #
-#   Date Started: 03/23/2025                  #
-#  Date Finished: 03/23/2025                  #
- # # # # # # # # # # # # # # # # # # # # # # #
+ # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#        Project: WeLearn: School Portal Management System   #
+#         Author: dreyyan                                    #
+#       Language: Python                                     #
+#   Date Started: 03/23/2025                                 #
+#  Date Finished: 03/23/2025                                 #
+ # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ''' IMPORTS '''
-import time, json, random, string
+import time, json, random, string, os, hashlib
 from abc import ABC, abstractmethod
 
 ''' MODULES '''
@@ -26,7 +26,7 @@ def error_message(message):
 
 # UTILITY: Display header for the interface /w appropriate formatting
 def display_header(interface_name, space, is_odd):
-    line_delay_animation("          [ STUDENT MANAGEMENT SYSTEM ]", 0.1)
+    line_delay_animation("   [ WeLearn: School Portal Management System ]", 0.1)
     if is_odd:
         print(((space - 1) * '-'), end='') # Output spacing
     else:
@@ -161,99 +161,163 @@ def display_courses(department_key):
         delay(0.1)
     display_format('*', 50)
 
-''' INTERFACE: LOGIN/REGISTER '''
-def go_to_register_menu():
-    # USERNAME LOGIC
-    while True:
-        clear_screen()
-        display_header("REGISTER", 8, False)
-        display_format('*', 26)
-        print("USERNAME ~ [5-20 chars.][no spaces]")
-        display_format('*', 26)
-        username = input(" Username: ")
-
-        if ' ' in username:  # ERROR: Space character in username
-            error_message("Username must not contain spaces")
-        if len(username) < 5:  # ERROR: Below minimum character limit
-            error_message("Username must be at least 5 characters")
-        elif len(username) > 20:  # ERROR: Above maximum character limit
-            error_message("Username must not exceed 20 characters")
-        else: break
-
-    # PASSWORD LOGIC
-    while True:
-        clear_screen()
-        display_header("REGISTER", 8, False)
-        display_format('*', 26)
-        print("PASSWORD ~ [5-20 chars.][one symbol]")
-        display_format('*', 26)
-        password = input(" Password: ")
-
-        if ' ' in password:  # ERROR: Space character in password
-            error_message("Password must not contain spaces")
-        if len(password) < 5:  # ERROR: Below minimum character limit
-            error_message("Password must be at least 5 characters")
-        elif len(password) > 20:  # ERROR: Above maximum character limit
-            error_message("Password must not exceed 20 characters")
-        else: break
-
-    get_input = input("")
-
-
-def go_to_login_menu():
-    while True:
-        clear_screen()
-        display_header("LOGIN", 22, True)
-        display_format('*', 50)
-        username = input(" Username: ").strip()
-    get_input = input("")
-
-def go_to_menu():
-    while True:
-        clear_screen()
-        display_header("MENU", 22, False)
-        display_format('*', 50)
-        print(" [1] Login")
-        delay(0.1)
-        print(" [2] Register")
-        delay(0.1)
-        display_format('*', 50)
-
-        try:
-            menu_choice = int(input(" Enter choice: ").strip())
-
-            # Redirect menu
-            if menu_choice == 1:
-                go_to_login_menu()
-                return
-            elif menu_choice == 2:
-                go_to_register_menu()
-                return
-
-        except ValueError:
-            error_message("Invalid input, please enter a number")
-            continue
+def display_main_menu(self) -> None:
+    pass
 
 ''' CLASS: BASE '''
-class Person:
-    # CONSTRUCTOR: Default
-    def __init__(self):
-        pass
+class Person(ABC):
+    # File to store user data
+    USER_DATA_FILE = "users.json"
 
-    # CONSTRUCTOR: Parameterized
-    def __init__(self, name, age, gender):
+    # Constructor
+    def __init__(self, name="N/A", age="N/A", gender="N/A"):
         self.name = name
         self.age = age
         self.gender = gender
 
     ''' METHODS: BASE '''
     @abstractmethod
-    def display_info(self):
+    def display_information(self):
         pass
 
     @abstractmethod
     def display_main_menu(self):
         pass
+
+    ''' JSON Methods '''
+    def load_users(self):
+        """Load user data from JSON file."""
+        if not os.path.exists(self.USER_DATA_FILE):
+            return {}
+        with open(self.USER_DATA_FILE, "r") as file:
+            return json.load(file)
+
+    def save_users(self, users):
+        """Save user data to JSON file."""
+        with open(self.USER_DATA_FILE, "w") as file:
+            json.dump(users, file, indent=4)
+
+    @staticmethod
+    def hash_password(password):
+        """Hash password for security."""
+        return hashlib.sha256(password.encode()).hexdigest()
+
+    def go_to_register_menu(self):
+        users = self.load_users()  # Load existing users
+
+        # USERNAME LOGIC
+        while True:
+            clear_screen()
+            display_header("REGISTER", 20, False)
+            display_format('*', 50)
+            print("* USERNAME ~ [5-20 chars.][no spaces]")
+            display_format('*', 50)
+            username = input(" Username: ").strip()
+
+            if ' ' in username:
+                error_message("Username must not contain spaces")
+            elif len(username) < 5:
+                error_message("Username must be at least 5 characters")
+            elif len(username) > 20:
+                error_message("Username must not exceed 20 characters")
+            elif username in users:
+                error_message("Username already exists")
+            else:
+                break
+
+        # PASSWORD LOGIC
+        while True:
+            clear_screen()
+            display_header("REGISTER", 20, False)
+            display_format('*', 50)
+            print("* PASSWORD ~ [5-20 chars.][no spaces]")
+            display_format('*', 50)
+            password = input(" password: ").strip()
+
+            if ' ' in username:
+                error_message("Password must not contain spaces")
+            elif len(username) < 5:
+                error_message("Password must be at least 5 characters")
+            elif len(username) > 20:
+                error_message("Password must not exceed 20 characters")
+            elif password in users:
+                error_message("Password already exists")
+            elif not any(char in "!@#$%^&*()-_+=<>?/\\|" for char in password):
+                error_message("Password must contain at least one symbol")
+            else:
+                break
+
+        # Save user credentials
+        users[username] = self.hash_password(password)
+        self.save_users(users)
+
+        clear_screen()
+        display_header("REGISTER", 20, False)
+        display_format('*', 50)
+        print(" * Registration successful! You can now log in. *")
+        delay(0.1)
+
+        # Return to menu
+        press_enter_to_continue()
+        self.go_to_menu()
+
+    def go_to_login_menu(self):
+        users = self.load_users()  # Load existing users
+
+        # USERNAME LOGIC
+        while True:
+            clear_screen()
+            display_header("LOGIN", 22, True)
+            display_format('*', 50)
+            username = input(" Username: ").strip()
+
+            # ERROR: Non-existing username
+            if username not in users:
+                error_message("Username not found")
+                continue
+            else: break
+
+        while True:
+            clear_screen()
+            display_header("LOGIN", 22, True)
+            display_format('*', 50)
+            password = input(" Password: ").strip()
+
+            # ERROR: Wrong password
+            if users[username] != self.hash_password(password):
+                error_message("Incorrect password")
+                continue
+            else: break
+
+        print(f"* Login successful! Welcome, {username} *")
+        delay(1)
+        self.display_main_menu()
+
+    def go_to_menu(self):
+        while True:
+            clear_screen()
+            display_header("MENU", 22, False)
+            display_format('*', 50)
+            print(" [1] Login")
+            delay(0.1)
+            print(" [2] Register")
+            delay(0.1)
+            display_format('*', 50)
+
+            try:
+                menu_choice = int(input(" Enter choice: ").strip())
+
+                # Redirect menu
+                if menu_choice == 1:
+                    self.go_to_login_menu()
+                    return
+                elif menu_choice == 2:
+                    self.go_to_register_menu()
+                    return
+
+            except ValueError:
+                error_message("Invalid input, please enter a number")
+                continue
 
 ''' CLASS: DERIVED(Student) '''
 class Student(Person):
@@ -273,8 +337,6 @@ class Student(Person):
             3: self.display_information,
             4: self.edit_information
         }
-
-    ''' METHODS: UTILITY '''
 
     ''' METHODS: OPERATIONS '''
     def enroll_course(self):
@@ -512,7 +574,7 @@ class Student(Person):
 
                 # Exit program
                 if user_input == 5:
-                    go_to_menu()
+                    self.go_to_menu()
                     return
 
                 # Invoke function
@@ -841,7 +903,7 @@ class Teacher(Person):
 
                 # Exit program
                 if user_input == 6:
-                    go_to_menu()
+                    self.go_to_menu()
                     return
 
                 # Invoke function
@@ -856,8 +918,9 @@ class Teacher(Person):
                 error_message("Invalid choice, please enter a number")
                 continue
 
+student_start_program = Student()
 teacher_start_program = Teacher()
-teacher_start_program.display_main_menu()
-
-# student_start_program = Student()
+student_start_program.go_to_menu()
 # student_start_program.display_main_menu()
+# teacher_start_program.display_main_menu()
+
