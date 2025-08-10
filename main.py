@@ -1,18 +1,11 @@
- # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#        Project: WeLearn: School Portal Management System   #
-#         Author: dreyyan                                    #
-#       Language: Python                                     #
-#   Date Started: 03/23/2025                                 #
-#  Date Finished: 03/23/2025                                 #
- # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 ''' IMPORTS '''
 import time, json, random, string, os, hashlib
 from abc import ABC, abstractmethod
 
 ''' MODULES '''
-from modules.line_delay_animation import line_delay_animation
-from modules.clear_screen import clear_screen
-from modules.display_format import display_format
+from msys.line_delay_animation import line_delay_animation
+from msys.clear_screen import clear_screen
+from msys.display_format import display_format
 
 ''' UTILITIES '''
 # UTILITY: Simulate a time delay within specified seconds
@@ -170,7 +163,7 @@ class Person(ABC):
     USER_DATA_FILE = "users.json"
 
     # Constructor
-    def __init__(self, name="N/A", age="N/A", gender="N/A"):
+    def __init__(self, name="N/A", age=0, gender="N/A"):
         self.name = name
         self.age = age
         self.gender = gender
@@ -512,16 +505,16 @@ class Student(Person):
                 continue
             else: break
 
-            # Set blank student gender
-            if student_gender == "":
-                student_gender = "Prefer not to say"
+        # Set blank student gender
+        if student_gender == "":
+            student_gender = "Prefer not to say"
 
-            # Set student gender to 'M'
-            if student_gender in ['M', "MALE"]:
-                student_gender = 'M'
-            # Set student gender to 'F'
-            elif student_gender in ['F', "FEMALE"]:
-                student_gender = 'F'
+        # Set student gender to 'M'
+        if student_gender in ['M', "MALE"]:
+            student_gender = 'M'
+        # Set student gender to 'F'
+        elif student_gender in ['F', "FEMALE"]:
+            student_gender = 'F'
 
         self.gender = student_gender
 
@@ -608,8 +601,6 @@ class Teacher(Person):
             4: self.display_information,
             5: self.edit_information
         }
-
-    ''' METHODS: UTILITY '''
 
     ''' METHODS: OPERATIONS '''
     def assign_department_and_course(self):
@@ -840,16 +831,16 @@ class Teacher(Person):
             else:
                 break
 
-            # Set blank student gender
-            if teacher_gender == "":
-                teacher_gender = "Prefer not to say"
+        # Set blank student gender
+        if teacher_gender == "":
+            teacher_gender = "Prefer not to say"
 
-            # Set student gender to 'M'
-            if teacher_gender in ['M', "MALE"]:
-                teacher_gender = 'M'
-            # Set student gender to 'F'
-            elif teacher_gender in ['F', "FEMALE"]:
-                teacher_gender = 'F'
+        # Set student gender to 'M'
+        if teacher_gender in ['M', "MALE"]:
+            teacher_gender = 'M'
+        # Set student gender to 'F'
+        elif teacher_gender in ['F', "FEMALE"]:
+            teacher_gender = 'F'
 
         self.gender = teacher_gender
 
